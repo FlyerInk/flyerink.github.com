@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cryptoauthlib on 飞墨空间·笔记</title>
+    <link>https://flyerink.github.io/tags/cryptoauthlib/</link>
+    <description>Recent content in Cryptoauthlib on 飞墨空间·笔记</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>Copyright (c) 2021, Flyerink Wang</copyright>
+    <lastBuildDate>Mon, 17 May 2021 16:58:22 +0800</lastBuildDate><atom:link href="https://flyerink.github.io/tags/cryptoauthlib/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>将Cryptoauthlib设置为Linux系统的PKCS11提供程序</title>
+      <link>https://flyerink.github.io/post/%E5%9C%A8linux%E4%B8%8B%E7%BC%96%E8%AF%91cryptoauthlib%E5%92%8Cpkcs11/</link>
+      <pubDate>Mon, 17 May 2021 16:58:22 +0800</pubDate>
+      
+      <guid>https://flyerink.github.io/post/%E5%9C%A8linux%E4%B8%8B%E7%BC%96%E8%AF%91cryptoauthlib%E5%92%8Cpkcs11/</guid>
+      <description>这些说明用于将Cryptoauthlib构建、安装和配置为pkcs11提供者。
+这些说明适用于带有包管理器的常用Linux系统。
+更新系统的libp11,最低版本是0.4.10 安装系统的构建依赖库: 1 2  # Debian like systems $ sudo apt-get build-dep libengine-pkcs11-openssl1.1   1 2  # RPM based systems $ yum-builddep engine-pkcs11   获取最新版本的libp11 1  $ git clone https://github.com/OpenSC/libp11.git    构建配置工具:  1 2 3  $ cd libp11 $ ./bootstrap $ ./configure   或者可以指定安装目标
+1  ./configure --prefix=/usr/local    编译库:  1  $ make    安装库:  1  $ sudo make install   构建和安装支持PKCS11的cryptoauthlib 安装系统的构建依赖库libudev-dev: 1 2 3  # Debian like systems $ sudo apt-get install cmake libudev-dev $ sudo apt-get install libusb-1.</description>
+    </item>
+    
+    <item>
+      <title>在Linux下交叉编译Cryptoauthlib到ARM平台下</title>
+      <link>https://flyerink.github.io/post/%E5%9C%A8linux%E4%B8%8B%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91cryptoauthlib%E5%88%B0arm%E5%B9%B3%E5%8F%B0%E4%B8%8B/</link>
+      <pubDate>Mon, 17 May 2021 16:50:22 +0800</pubDate>
+      
+      <guid>https://flyerink.github.io/post/%E5%9C%A8linux%E4%B8%8B%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91cryptoauthlib%E5%88%B0arm%E5%B9%B3%E5%8F%B0%E4%B8%8B/</guid>
+      <description>Cryptoauthlib是Microchip针对安全芯片发布的C语言的代码库。具有优秀的分层结构，可以很方便地移植到任意平台中。并且提供了针对常用SSL库的适配层，支持OpenSSL, MbedTLS, WolfSSL等。
+目前大部分的Linux系统中使用OpenSSL，OpenSSL调用硬件SE是通过PKCS11来实现的。本文将介绍OpenSSL通过PKCS11来调用Cryptoauthlib，实现操作硬件SE的步骤。
+基本的依赖关系为： OpenSSL -&amp;gt; p11-kit -&amp;gt; libpkcs -&amp;gt; Cryptoauthlib
+硬件平台 在Arm平台下可以使用I2C或HID接口。对于嵌入式平台通常使用I2C接口直接操作安全芯片。
+ 本文主要介绍I2C接口。
+ 由于软件的依赖关系比较复杂，强烈推荐使用Buildroot构建工具，其中已经支持了大部分的依赖库，比如openssl, openssl-engine, libp11, p11-kit, gnutls, libffi, libtasn1等。
+安装交叉编译工具 有两种方式安装编译工具链。
+1. 使用apt自动安装 1  $ sudo apt-get install gcc-arm-linux-gnueabi   2. 使用buildroot搭建编译工具链 两种方式：
+ 从buildroot源码自行构建工具链 安装Buildroot的SDK  通常如果需要自行定义目标板的运行库和相关工具时，需要按照需求配置目标板的运行环境。建议自行搭建builroot工具链。具体参考buildroot相关文档。
+或者直接复制SDK安装文件到需要的目录下，运行解压命令即可。 解压后进入目录，运行一个shell脚本重定向编译环境。
+命令如下
+1 2 3  $ tar xzvf arm-buildroot-linux-gnueabi_sdk-buildroot.tar.gz $ cd arm-buildroot-linux-gnueabi_sdk-buildroot $ ./relocate-sdk.sh   下载编译支持pkcs11的Cryptoauthlib库 我们需要支持pkcs11的版本
+获取支持PKCS11的cryptoauthlib最新版本 1  $ git clone --single-branch -b pkcs11 https://github.</description>
+    </item>
+    
+  </channel>
+</rss>

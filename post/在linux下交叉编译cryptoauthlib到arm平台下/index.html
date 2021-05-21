@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html><head>
+<title>在Linux下交叉编译Cryptoauthlib到ARM平台下</title>
+
+
+
+
+<meta charset="utf-8">
+<meta name="X-UA-Compatible" content="IE=edge">
+<meta name="google-site-verification" content="">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="telephone=no" name="format-detection">
+<meta name="description" content="在Linux下交叉编译Microchip安全加密库Cryptoauthlib到ARM平台下">
+<meta name="renderer" content="webkit">
+<meta name="theme-color" content="#ffffff">
+
+
+
+
+
+
+
+
+
+
+
+<link type="text/css" rel="stylesheet" href="../../vendor/css/bootstrap.min.css">
+<script src="../../vendor/js/vue.min.js" ></script>
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://flyerink.github.io/scss/journal.min.3f72a5fc8f5b5dd732a4b476aced0eece2156958d9d414316494ddb10593ddf7.css" integrity="sha256-P3Kl/I9bXdcypLR2rO0O7OIVaVjZ1BQxZJTdsQWT3fc=" media="screen">
+
+
+
+<link rel="stylesheet" href="https://flyerink.github.io/scss/dark-mode.min.c0082f0b082177f6fb3768ff91439a097de49689bd26f4d49f76d94ebb81e02d.css" integrity="sha256-wAgvCwghd/b7N2j/kUOaCX3klom9JvTUn3bZTruB4C0=" media="screen">
+
+
+<script src="../../js/loadCSS.js"></script>
+<script>
+  loadCSS("https://fonts.googleapis.com/css?family=Fira+Mono|Material+Icons");
+</script>
+
+
+
+
+  
+    <script src="../../js/toc.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+    	<div id="app"><div ref="sideContainer" class="side-container">
+    
+    <a class="a-block nav-head false" href="https://flyerink.github.io/">
+    
+        <div class="nav-title">
+            飞墨空间·笔记
+        </div>
+        
+        <div class="nav-subtitle">
+            FlyerInk的博客
+        </div>
+        
+    </a>
+
+    <div class="nav-link-list">
+        
+        
+            
+            
+            
+                
+            
+            
+            
+            <a class="a-block nav-link-item active" href="../../post">
+                文章
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="../../categories">
+                分类
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="../../tags">
+                标签
+            </a>
+            
+        
+            
+            
+            
+            
+            
+            <a class="a-block nav-link-item false" href="../../post/about">
+                关于我
+            </a>
+            
+        
+    </div>
+
+    
+
+    <div class="nav-footer">
+        
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> By <a href="https://amazingrise.net">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	Copyright (c) 2021, Flyerink Wang
+	
+
+    </div>
+    
+</div><div ref="extraContainer" class="extra-container">
+    
+    
+    <div class="toc animated-visibility" :class="{ invisible: scrollY <= 140 }">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e7%a1%ac%e4%bb%b6%e5%b9%b3%e5%8f%b0" onclick="onNavClick(`#硬件平台-nav`)" id="硬件平台-nav">
+									硬件平台
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%ae%89%e8%a3%85%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7" onclick="onNavClick(`#安装交叉编译工具-nav`)" id="安装交叉编译工具-nav">
+									安装交叉编译工具
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1-%e4%bd%bf%e7%94%a8apt%e8%87%aa%e5%8a%a8%e5%ae%89%e8%a3%85" onclick="onNavClick(`#1-使用apt自动安装-nav`)" id="1-使用apt自动安装-nav">
+									1. 使用apt自动安装
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2-%e4%bd%bf%e7%94%a8buildroot%e6%90%ad%e5%bb%ba%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be" onclick="onNavClick(`#2-使用buildroot搭建编译工具链-nav`)" id="2-使用buildroot搭建编译工具链-nav">
+									2. 使用buildroot搭建编译工具链
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e4%b8%8b%e8%bd%bd%e7%bc%96%e8%af%91%e6%94%af%e6%8c%81pkcs11%e7%9a%84cryptoauthlib%e5%ba%93" onclick="onNavClick(`#下载编译支持pkcs11的cryptoauthlib库-nav`)" id="下载编译支持pkcs11的cryptoauthlib库-nav">
+									下载编译支持pkcs11的Cryptoauthlib库
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e8%8e%b7%e5%8f%96%e6%94%af%e6%8c%81pkcs11%e7%9a%84cryptoauthlib%e6%9c%80%e6%96%b0%e7%89%88%e6%9c%ac" onclick="onNavClick(`#获取支持pkcs11的cryptoauthlib最新版本-nav`)" id="获取支持pkcs11的cryptoauthlib最新版本-nav">
+									获取支持PKCS11的cryptoauthlib最新版本
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%9c%a8%e6%ba%90%e7%a0%81%e7%9b%ae%e5%bd%95%e4%b8%8b%e5%bb%ba%e7%ab%8bcmake%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be%e6%96%87%e4%bb%b6arm_toolchaincmake%e5%85%b7%e4%bd%93%e8%b7%af%e5%be%84%e9%9c%80%e8%a6%81%e6%a0%b9%e6%8d%ae%e8%87%aa%e5%b7%b1%e7%9a%84%e7%bc%96%e8%af%91%e7%8e%af%e5%a2%83%e4%bf%ae%e6%94%b9" onclick="onNavClick(`#在源码目录下建立cmake交叉编译工具链文件arm_toolchaincmake具体路径需要根据自己的编译环境修改-nav`)" id="在源码目录下建立cmake交叉编译工具链文件arm_toolchaincmake具体路径需要根据自己的编译环境修改-nav">
+									在源码目录下建立cmake交叉编译工具链文件arm_toolchain.cmake，具体路径需要根据自己的编译环境修改。
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%bf%ae%e6%94%b9%e9%bb%98%e8%ae%a4%e7%9a%84i2c%e5%9c%b0%e5%9d%80%e5%92%8c%e5%ba%8f%e5%8f%b7%e5%8f%af%e9%80%89%e5%bd%93%e9%9c%80%e8%a6%81%e8%bf%90%e8%a1%8ccryptoauthlib_test%e6%97%b6" onclick="onNavClick(`#修改默认的i2c地址和序号可选当需要运行cryptoauthlib_test时-nav`)" id="修改默认的i2c地址和序号可选当需要运行cryptoauthlib_test时-nav">
+									修改默认的I2C地址和序号(可选，当需要运行cryptoauthlib_test时)
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%bc%96%e8%af%91%e7%94%9f%e6%88%90arm%e4%b8%8b%e7%9a%84%e4%ba%8c%e8%bf%9b%e5%88%b6%e5%8f%af%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6" onclick="onNavClick(`#编译生成arm下的二进制可执行文件-nav`)" id="编译生成arm下的二进制可执行文件-nav">
+									编译生成ARM下的二进制可执行文件
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%a4%8d%e5%88%b6%e5%8f%af%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6%e5%92%8c%e7%94%9f%e6%88%90%e7%9a%84%e5%ba%93%e4%bb%a5%e5%8f%8a%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%88%b0%e5%bc%80%e5%8f%91%e6%9d%bf%e4%b8%ad" onclick="onNavClick(`#复制可执行文件和生成的库以及配置文件到开发板中-nav`)" id="复制可执行文件和生成的库以及配置文件到开发板中-nav">
+									复制可执行文件和生成的库以及配置文件到开发板中：
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%90%e8%a1%8c%e5%b9%b6%e6%b5%8b%e8%af%95" onclick="onNavClick(`#运行并测试-nav`)" id="运行并测试-nav">
+									运行并测试
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91libp11" onclick="onNavClick(`#交叉编译libp11-nav`)" id="交叉编译libp11-nav">
+									交叉编译libp11
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91pk11-kit" onclick="onNavClick(`#交叉编译pk11-kit-nav`)" id="交叉编译pk11-kit-nav">
+									交叉编译pk11-kit
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#p11-kit%e7%ae%80%e4%bb%8b" onclick="onNavClick(`#p11-kit简介-nav`)" id="p11-kit简介-nav">
+									p11-kit简介
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#p11-kit%e4%be%9d%e8%b5%96%e5%ba%93" onclick="onNavClick(`#p11-kit依赖库-nav`)" id="p11-kit依赖库-nav">
+									p11-kit依赖库
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%ae%89%e8%a3%85p11-kit" onclick="onNavClick(`#安装p11-kit-nav`)" id="安装p11-kit-nav">
+									安装p11-kit
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e6%80%8e%e6%a0%b7%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85libffi" onclick="onNavClick(`#怎样编译安装libffi-nav`)" id="怎样编译安装libffi-nav">
+									怎样编译安装libffi
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#libtasn1" onclick="onNavClick(`#libtasn1-nav`)" id="libtasn1-nav">
+									libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#introduction-to-libtasn1" onclick="onNavClick(`#introduction-to-libtasn1-nav`)" id="introduction-to-libtasn1-nav">
+									Introduction to libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#installation-of-libtasn1" onclick="onNavClick(`#installation-of-libtasn1-nav`)" id="installation-of-libtasn1-nav">
+									Installation of libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#make-install" onclick="onNavClick(`#make-install-nav`)" id="make-install-nav">
+									make install
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#command-explanations" onclick="onNavClick(`#command-explanations-nav`)" id="command-explanations-nav">
+									Command Explanations
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#contents" onclick="onNavClick(`#contents-nav`)" id="contents-nav">
+									Contents
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#short-descriptions" onclick="onNavClick(`#short-descriptions-nav`)" id="short-descriptions-nav">
+									Short Descriptions
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e7%bc%96%e8%af%91gnutls" onclick="onNavClick(`#编译gnutls-nav`)" id="编译gnutls-nav">
+									编译gnutls
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+    
+    <div class="pagination">
+        <a id="globalBackToTop" class="pagination-action animated-visibility" href="#top" :class="{ invisible: scrollY == 0 }">
+            <i class="material-icons pagination-action-icon">
+                keyboard_arrow_up
+            </i>
+        </a>
+        
+        <a class="pagination-action" v-on:click="toggleDarkMode">
+            <i class="material-icons pagination-action-icon" v-if="isDarkMode">
+                brightness_4
+            </i>
+            <i class="material-icons pagination-action-icon" v-else="isDarkMode">
+                brightness_7
+            </i>
+        </a>
+        
+        
+    </div>
+</div>
+<div class="single-column-drawer-container" ref="drawer"
+     v-bind:class="{ 'single-column-drawer-container-active': isDrawerOpen }">
+    <div class="drawer-content">
+        <div class="drawer-menu">
+            
+            
+            
+                
+                
+                
+                    
+                
+                
+                
+                <a class="a-block drawer-menu-item active" href="../../post">
+                    文章
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="../../categories">
+                    分类
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="../../tags">
+                    标签
+                </a>
+                
+            
+                
+                
+                
+                
+                
+                <a class="a-block drawer-menu-item false" href="../../post/about">
+                    关于我
+                </a>
+                
+            
+            
+            <div class="toc">
+
+
+	<div class="toc-content">
+	
+		
+		
+		
+		<center>- 目录 -</center>
+		
+		
+		<ul>
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e7%a1%ac%e4%bb%b6%e5%b9%b3%e5%8f%b0" onclick="onNavClick(`#硬件平台-nav`)" id="硬件平台-nav">
+									硬件平台
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%ae%89%e8%a3%85%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7" onclick="onNavClick(`#安装交叉编译工具-nav`)" id="安装交叉编译工具-nav">
+									安装交叉编译工具
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#1-%e4%bd%bf%e7%94%a8apt%e8%87%aa%e5%8a%a8%e5%ae%89%e8%a3%85" onclick="onNavClick(`#1-使用apt自动安装-nav`)" id="1-使用apt自动安装-nav">
+									1. 使用apt自动安装
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#2-%e4%bd%bf%e7%94%a8buildroot%e6%90%ad%e5%bb%ba%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be" onclick="onNavClick(`#2-使用buildroot搭建编译工具链-nav`)" id="2-使用buildroot搭建编译工具链-nav">
+									2. 使用buildroot搭建编译工具链
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e4%b8%8b%e8%bd%bd%e7%bc%96%e8%af%91%e6%94%af%e6%8c%81pkcs11%e7%9a%84cryptoauthlib%e5%ba%93" onclick="onNavClick(`#下载编译支持pkcs11的cryptoauthlib库-nav`)" id="下载编译支持pkcs11的cryptoauthlib库-nav">
+									下载编译支持pkcs11的Cryptoauthlib库
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#%e8%8e%b7%e5%8f%96%e6%94%af%e6%8c%81pkcs11%e7%9a%84cryptoauthlib%e6%9c%80%e6%96%b0%e7%89%88%e6%9c%ac" onclick="onNavClick(`#获取支持pkcs11的cryptoauthlib最新版本-nav`)" id="获取支持pkcs11的cryptoauthlib最新版本-nav">
+									获取支持PKCS11的cryptoauthlib最新版本
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%9c%a8%e6%ba%90%e7%a0%81%e7%9b%ae%e5%bd%95%e4%b8%8b%e5%bb%ba%e7%ab%8bcmake%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7%e9%93%be%e6%96%87%e4%bb%b6arm_toolchaincmake%e5%85%b7%e4%bd%93%e8%b7%af%e5%be%84%e9%9c%80%e8%a6%81%e6%a0%b9%e6%8d%ae%e8%87%aa%e5%b7%b1%e7%9a%84%e7%bc%96%e8%af%91%e7%8e%af%e5%a2%83%e4%bf%ae%e6%94%b9" onclick="onNavClick(`#在源码目录下建立cmake交叉编译工具链文件arm_toolchaincmake具体路径需要根据自己的编译环境修改-nav`)" id="在源码目录下建立cmake交叉编译工具链文件arm_toolchaincmake具体路径需要根据自己的编译环境修改-nav">
+									在源码目录下建立cmake交叉编译工具链文件arm_toolchain.cmake，具体路径需要根据自己的编译环境修改。
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%bf%ae%e6%94%b9%e9%bb%98%e8%ae%a4%e7%9a%84i2c%e5%9c%b0%e5%9d%80%e5%92%8c%e5%ba%8f%e5%8f%b7%e5%8f%af%e9%80%89%e5%bd%93%e9%9c%80%e8%a6%81%e8%bf%90%e8%a1%8ccryptoauthlib_test%e6%97%b6" onclick="onNavClick(`#修改默认的i2c地址和序号可选当需要运行cryptoauthlib_test时-nav`)" id="修改默认的i2c地址和序号可选当需要运行cryptoauthlib_test时-nav">
+									修改默认的I2C地址和序号(可选，当需要运行cryptoauthlib_test时)
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e7%bc%96%e8%af%91%e7%94%9f%e6%88%90arm%e4%b8%8b%e7%9a%84%e4%ba%8c%e8%bf%9b%e5%88%b6%e5%8f%af%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6" onclick="onNavClick(`#编译生成arm下的二进制可执行文件-nav`)" id="编译生成arm下的二进制可执行文件-nav">
+									编译生成ARM下的二进制可执行文件
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%a4%8d%e5%88%b6%e5%8f%af%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6%e5%92%8c%e7%94%9f%e6%88%90%e7%9a%84%e5%ba%93%e4%bb%a5%e5%8f%8a%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e5%88%b0%e5%bc%80%e5%8f%91%e6%9d%bf%e4%b8%ad" onclick="onNavClick(`#复制可执行文件和生成的库以及配置文件到开发板中-nav`)" id="复制可执行文件和生成的库以及配置文件到开发板中-nav">
+									复制可执行文件和生成的库以及配置文件到开发板中：
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e8%bf%90%e8%a1%8c%e5%b9%b6%e6%b5%8b%e8%af%95" onclick="onNavClick(`#运行并测试-nav`)" id="运行并测试-nav">
+									运行并测试
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91libp11" onclick="onNavClick(`#交叉编译libp11-nav`)" id="交叉编译libp11-nav">
+									交叉编译libp11
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91pk11-kit" onclick="onNavClick(`#交叉编译pk11-kit-nav`)" id="交叉编译pk11-kit-nav">
+									交叉编译pk11-kit
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#p11-kit%e7%ae%80%e4%bb%8b" onclick="onNavClick(`#p11-kit简介-nav`)" id="p11-kit简介-nav">
+									p11-kit简介
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#p11-kit%e4%be%9d%e8%b5%96%e5%ba%93" onclick="onNavClick(`#p11-kit依赖库-nav`)" id="p11-kit依赖库-nav">
+									p11-kit依赖库
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#%e5%ae%89%e8%a3%85p11-kit" onclick="onNavClick(`#安装p11-kit-nav`)" id="安装p11-kit-nav">
+									安装p11-kit
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e6%80%8e%e6%a0%b7%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85libffi" onclick="onNavClick(`#怎样编译安装libffi-nav`)" id="怎样编译安装libffi-nav">
+									怎样编译安装libffi
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#libtasn1" onclick="onNavClick(`#libtasn1-nav`)" id="libtasn1-nav">
+									libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#introduction-to-libtasn1" onclick="onNavClick(`#introduction-to-libtasn1-nav`)" id="introduction-to-libtasn1-nav">
+									Introduction to libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#installation-of-libtasn1" onclick="onNavClick(`#installation-of-libtasn1-nav`)" id="installation-of-libtasn1-nav">
+									Installation of libtasn1
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#make-install" onclick="onNavClick(`#make-install-nav`)" id="make-install-nav">
+									make install
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+							
+								
+									<ul>
+								
+							
+						
+						
+							<li>
+								<a href="#command-explanations" onclick="onNavClick(`#command-explanations-nav`)" id="command-explanations-nav">
+									Command Explanations
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#contents" onclick="onNavClick(`#contents-nav`)" id="contents-nav">
+									Contents
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+						
+						
+							<li>
+								<a href="#short-descriptions" onclick="onNavClick(`#short-descriptions-nav`)" id="short-descriptions-nav">
+									Short Descriptions
+								</a>
+							</li>
+						
+						
+					
+				
+			
+				
+				
+					
+						
+						
+						
+							
+								</ul>
+							
+								</ul>
+							
+						
+						
+						
+							<li>
+								<a href="#%e7%bc%96%e8%af%91gnutls" onclick="onNavClick(`#编译gnutls-nav`)" id="编译gnutls-nav">
+									编译gnutls
+								</a>
+							</li>
+						
+						
+					
+				
+			
+		</ul>
+	</div>
+
+</div>
+            
+        </div>
+    </div>
+</div>
+<transition name="fade">
+    <div v-bind:class="{ 'single-column-drawer-mask': mounted }" v-if="isDrawerOpen" v-on:click="toggleDrawer"></div>
+</transition>
+<nav ref="navBar" class="navbar sticky-top navbar-light single-column-nav-container">
+    <div ref="navBackground" class="nav-background"></div>
+    <div class="container container-narrow nav-content">
+        <button id="nav_dropdown_btn" class="nav-dropdown-toggle" type="button" v-on:click="toggleDrawer">
+            <i class="material-icons">
+                menu
+            </i>
+        </button>
+        <a ref="navTitle" class="navbar-brand" href="https://flyerink.github.io/">
+            飞墨空间·笔记
+        </a>
+        
+        <button type="button" class="nav-darkmode-toggle" v-on:click="toggleDarkMode">
+            <i class="material-icons" v-if="isDarkMode">
+                brightness_4
+            </i>
+            <i class="material-icons" v-else="isDarkMode">
+                brightness_7
+            </i>
+        </button>
+        
+    </div>
+</nav>
+<div class="single-column-header-container" ref="pageHead"
+     v-bind:style="{ transform: 'translateZ(0px) translateY('+.3*scrollY+'px)', opacity: 1-navOpacity }">
+    <a href="https://flyerink.github.io/">
+        <div class="single-column-header-title">飞墨空间·笔记</div>
+        
+        <div class="single-column-header-subtitle">FlyerInk的博客</div>
+        
+
+    </a>
+</div>
+
+            <div id="content">
+<div ref="streamContainer" class="stream-container">
+    <div class="post-list-container post-list-container-shadow">
+        <div class="post">
+            
+            
+            
+
+            <div class="post-head-wrapper-text-only"
+                
+            >
+                <div class="post-title">
+                    在Linux下交叉编译Cryptoauthlib到ARM平台下
+                    
+                    <div class="post-subtitle">
+                        在Linux下交叉编译Microchip安全加密库Cryptoauthlib到ARM平台下
+                    </div>
+                    
+                    <div class="post-meta">
+                        
+                        <time itemprop="datePublished">
+                            2021-05-17 16:50
+                        </time>
+                        
+
+                        
+                            <i class="material-icons" style="">folder</i>
+                                <a href="../../categories/">[安全芯片开发]</a>
+                                &nbsp;
+                        
+
+                        
+                            <i class="material-icons" style="">label</i>
+                            
+                                <a href="../../tags/cryptoauthlib">Cryptoauthlib</a>
+                                &nbsp;
+                            
+                                <a href="../../tags/linux">Linux</a>
+                                &nbsp;
+                            
+                                <a href="../../tags/arm">ARM</a>
+                                &nbsp;
+                            
+                        
+
+                        
+                            <i class="material-icons" style="">schedule</i>
+                            
+
+                            
+                            
+
+                            
+                            11 min
+                            
+                            15 s.
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="post-body-wrapper">
+                
+                <div class="post-body" v-pre>
+                
+                    <p>Cryptoauthlib是Microchip针对安全芯片发布的C语言的代码库。具有优秀的分层结构，可以很方便地移植到任意平台中。并且提供了针对常用SSL库的适配层，支持OpenSSL, MbedTLS, WolfSSL等。</p>
+<p>目前大部分的Linux系统中使用OpenSSL，OpenSSL调用硬件SE是通过PKCS11来实现的。本文将介绍OpenSSL通过PKCS11来调用Cryptoauthlib，实现操作硬件SE的步骤。</p>
+<p>基本的依赖关系为：
+OpenSSL -&gt; p11-kit -&gt; libpkcs -&gt; Cryptoauthlib</p>
+<h2 id="硬件平台">硬件平台</h2>
+<p>在Arm平台下可以使用I2C或HID接口。对于嵌入式平台通常使用I2C接口直接操作安全芯片。</p>
+<blockquote>
+<p>本文主要介绍I2C接口。</p>
+</blockquote>
+<p>由于软件的依赖关系比较复杂，强烈推荐使用Buildroot构建工具，其中已经支持了大部分的依赖库，比如openssl, openssl-engine, libp11, p11-kit, gnutls, libffi, libtasn1等。</p>
+<h2 id="安装交叉编译工具">安装交叉编译工具</h2>
+<p>有两种方式安装编译工具链。</p>
+<h3 id="1-使用apt自动安装">1. 使用apt自动安装</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ sudo apt-get install gcc-arm-linux-gnueabi
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="2-使用buildroot搭建编译工具链">2. 使用buildroot搭建编译工具链</h3>
+<p>两种方式：</p>
+<ul>
+<li>从buildroot源码自行构建工具链</li>
+<li>安装Buildroot的SDK</li>
+</ul>
+<p>通常如果需要自行定义目标板的运行库和相关工具时，需要按照需求配置目标板的运行环境。建议自行搭建builroot工具链。具体参考buildroot相关文档。</p>
+<p>或者直接复制SDK安装文件到需要的目录下，运行解压命令即可。
+解压后进入目录，运行一个shell脚本重定向编译环境。</p>
+<p>命令如下</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ tar xzvf arm-buildroot-linux-gnueabi_sdk-buildroot.tar.gz
+$ <span style="color:#366">cd</span> arm-buildroot-linux-gnueabi_sdk-buildroot
+$ ./relocate-sdk.sh
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="下载编译支持pkcs11的cryptoauthlib库">下载编译支持pkcs11的Cryptoauthlib库</h2>
+<p>我们需要支持pkcs11的版本</p>
+<h3 id="获取支持pkcs11的cryptoauthlib最新版本">获取支持PKCS11的cryptoauthlib最新版本</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ git clone --single-branch -b pkcs11 https://github.com/MicrochipTech/cryptoauthlib
+</code></pre></td></tr></table>
+</div>
+</div><p>由于国内网络访问github比较慢，可以用下面的备用库</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ git clone --single-branch -b pkcs11 https://gitee.com/flyerink/cryptoauthlib
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="在源码目录下建立cmake交叉编译工具链文件arm_toolchaincmake具体路径需要根据自己的编译环境修改">在源码目录下建立cmake交叉编译工具链文件arm_toolchain.cmake，具体路径需要根据自己的编译环境修改。</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+
+set(tools /opt/arm-buildroot-linux-gnueabi_sdk-buildroot)
+
+SET(CMAKE_C_COMPILER ${tools}/bin/arm-buildroot-linux-gnueabi-gcc)
+SET(CMAKE_CXX_COMPILER ${tools}/bin/arm-buildroot-linux-gnueabi-g++)
+SET(CMAKE_LINKER ${tools}/bin/arm-buildroot-linux-gnueabi-ld)
+SET(CMAKE_NM ${tools}/bin/arm-buildroot-linux-gnueabi-nm)
+SET(CMAKE_OBJCOPY ${tools}/bin/arm-buildroot-linux-gnueabi-objcopy)
+SET(CMAKE_OBJDUMP ${tools}/bin/arm-buildroot-linux-gnueabi-objdump)
+SET(CMAKE_RANLIB ${tools}/bin/arm-buildroot-linux-gnueabi-ranlib)
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="修改默认的i2c地址和序号可选当需要运行cryptoauthlib_test时">修改默认的I2C地址和序号(可选，当需要运行cryptoauthlib_test时)</h3>
+<p>进入lib/atca_cfgs.c, 默认608A的I2C地址是0xC0, 使用Linux系统中的i2c-2设备。根据自己目标板的设置来修改。</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#09f;font-style:italic">/** \brief default configuration for an ECCx08A device */</span>
+ATCAIfaceCfg cfg_ateccx08a_i2c_default <span style="color:#555">=</span> {
+    .iface_type                 <span style="color:#555">=</span> ATCA_I2C_IFACE,
+    .devtype                    <span style="color:#555">=</span> ATECC608A,
+    {
+        .atcai2c.slave_address  <span style="color:#555">=</span> <span style="color:#f60">0xC0</span>,
+        .atcai2c.bus            <span style="color:#555">=</span> <span style="color:#f60">2</span>,
+        .atcai2c.baud           <span style="color:#555">=</span> <span style="color:#f60">400000</span>,
+        <span style="color:#09f;font-style:italic">//.atcai2c.baud = 100000,
+</span><span style="color:#09f;font-style:italic"></span>    },
+    .wake_delay                 <span style="color:#555">=</span> <span style="color:#f60">1500</span>,
+    .rx_retries                 <span style="color:#555">=</span> <span style="color:#f60">20</span>
+};
+</code></pre></td></tr></table>
+</div>
+</div><p>我们使用的SAM9X60开发板，608A是连接在i2c-1上, I2C时钟是100K, 所以修改如下：</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#09f;font-style:italic">/** \brief default configuration for an ECCx08A device */</span>
+ATCAIfaceCfg cfg_ateccx08a_i2c_default <span style="color:#555">=</span> {
+    .iface_type                 <span style="color:#555">=</span> ATCA_I2C_IFACE,
+    .devtype                    <span style="color:#555">=</span> ATECC608A,
+    {
+        .atcai2c.slave_address  <span style="color:#555">=</span> <span style="color:#f60">0xC0</span>,
+        .atcai2c.bus            <span style="color:#555">=</span> <span style="color:#f60">1</span>,
+        <span style="color:#09f;font-style:italic">//.atcai2c.baud           = 400000,
+</span><span style="color:#09f;font-style:italic"></span>        .atcai2c.baud <span style="color:#555">=</span> <span style="color:#f60">100000</span>,
+    },
+    .wake_delay                 <span style="color:#555">=</span> <span style="color:#f60">1500</span>,
+    .rx_retries                 <span style="color:#555">=</span> <span style="color:#f60">20</span>
+};
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="编译生成arm下的二进制可执行文件">编译生成ARM下的二进制可执行文件</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ mkdir build
+$ <span style="color:#366">cd</span> build
+$ cmake -DCMAKE_TOOLCHAIN_FILE<span style="color:#555">=</span><span style="color:#c30">&#34;../arm_toolchain.cmake&#34;</span> -DBUILD_TESTS<span style="color:#555">=</span>ON -DATCA_PKCS11<span style="color:#555">=</span>ON -DATCA_HAL_I2C<span style="color:#555">=</span>ON -DATCA_HAL_KIT_HID<span style="color:#555">=</span>OFF -DATCA_HAL_KIT_CDC<span style="color:#555">=</span>OFF -DATCA_PRINTF<span style="color:#555">=</span>OFF ..
+$ make
+</code></pre></td></tr></table>
+</div>
+</div><p>编译生成动态链接库和测试程序。</p>
+<p>编译选项的说明：</p>
+<ul>
+<li>BUILD_TESTS：这里已经把BUILD_TESTS打开了，会自动编译生成测试程序，对当前的硬件用命令行的方式访问。可以用来验证硬件是否有问题。</li>
+<li>ATCA_PKCS11：我们是要编译用于PKCS11的链接库，必须打开。</li>
+<li>ATCA_HAL_I2C：如果使用I2C的HAL驱动需要开启，通常是针对带有I2C接口的目标板。</li>
+<li>DATCA_HAL_KIT_HID：使用USB-HID作为通信接口，通常Microchip提供的开发板都支持这种方式，包括DM320118, DM320109和AT88CK101等。</li>
+<li>ATCA_HAL_KIT_CDC：用于USB To UART的开发板连接。</li>
+<li>ATCA_PRINTF：如果想使用库中提供的atca_printf相关函数，可以把ATCA_PRINTF打开。</li>
+</ul>
+<p>可以使用file命令检验生成的测试程序是ARM平台的二进制文件</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ file test/cryptoauth_test
+test/cryptoauth_test: ELF 32-bit LSB executable, ARM, EABI5 version <span style="color:#f60">1</span> <span style="color:#555">(</span>SYSV<span style="color:#555">)</span>, dynamically linked, interpreter /lib/ld-linux.so.3, <span style="color:#069;font-weight:bold">for</span> GNU/Linux 5.4.0, with debug_info, not stripped
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="复制可执行文件和生成的库以及配置文件到开发板中">复制可执行文件和生成的库以及配置文件到开发板中：</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ scp cryptoauthlib.conf root@192.168.1.101:/etc/cryptoauthlib
+$ scp ../app/pkcs11/slot.conf.tmpl root@192.168.1.101:/var/lib/cryptoauthlib
+$ scp lib/libcryptoauth.so root@192.168.1.101:/usr/lib
+$ scp test/cryptoauth_test root@192.168.1.101:/root
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="运行并测试">运行并测试</h2>
+<p>通过SSH或串口登录到目标板，运行新下载的程序</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">$ ./cryptoauthlib_test
+</code></pre></td></tr></table>
+</div>
+</div><p>输入608选择器件型号
+输入info获取器件的版本信息
+输入sernum获取器件的序列号</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ 608
+
+Device Selected.
+
+$ info
+revision:
+00 00 60 02
+
+$sernum
+serial number:
+01 23 EE 52 4A 06 FA 85 EE
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="交叉编译libp11">交叉编译libp11</h2>
+<ul>
+<li>获取最新版本的libp11</li>
+</ul>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ git clone https://github.com/OpenSC/libp11.git
+$ git clone https://gitee.com/flyerink/libp11.git
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>构建配置工具:</li>
+</ul>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ <span style="color:#366">cd</span> libp11
+$ <span style="color:#366">export</span> <span style="color:#033">PKG_CONFIG_PATH</span><span style="color:#555">=</span>/opt/arm-buildroot-linux-gnueabi_sdk-buildroot/bin/pkg-config
+$ ./bootstrap
+$ ./configure --host<span style="color:#555">=</span>arm-buildroot-linux-gnueabi --prefix<span style="color:#555">=</span>/home/frenkie/security/bin/sam9x60
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>编译库:</li>
+</ul>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ make
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>安装库:</li>
+</ul>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ sudo make install
+</code></pre></td></tr></table>
+</div>
+</div><p>这样新的库和相关头文件就会复制安装到~/security/bin/sam9x60下面</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">$ ls
+include  lib  share
+</code></pre></td></tr></table>
+</div>
+</div><p>lib中的文件需要手动复制到目标板中</p>
+<h2 id="交叉编译pk11-kit">交叉编译pk11-kit</h2>
+<p>最新的稳定版本是p11-kit-0.23.20</p>
+<h3 id="p11-kit简介">p11-kit简介</h3>
+<p>p11-kit提供了一种导入和枚举PKCS11(一种密码令牌接口规范)模块的方式。</p>
+<p>Also solves problems with coordinating the use of PKCS#11 by different components or libraries living in the same process.</p>
+<p>This package contains the shared library required for applications loading and accessing PKCS#11 modules.</p>
+<p>可以点击下面链接下载：
+<a href="https://github.com/p11-glue/p11-kit/releases/download/0.23.20/p11-kit-0.23.20.tar.xz">https://github.com/p11-glue/p11-kit/releases/download/0.23.20/p11-kit-0.23.20.tar.xz</a></p>
+<h3 id="p11-kit依赖库">p11-kit依赖库</h3>
+<ul>
+<li>
+<p>推荐
+libffi, libtasn1-4.16.0 和 make-ca-1.7 (runtime)</p>
+</li>
+<li>
+<p>可选
+GTK-Doc-1.32, libxslt-1.1.34, 和 NSS-3.53.1 (runtime)</p>
+</li>
+</ul>
+<p>用户指南: <a href="http://wiki.linuxfromscratch.org/blfs/wiki/p11-kit">http://wiki.linuxfromscratch.org/blfs/wiki/p11-kit</a></p>
+<h3 id="安装p11-kit">安装p11-kit</h3>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">./configure --disable-static  --host<span style="color:#555">=</span>arm-buildroot-linux-gnueabi --prefix<span style="color:#555">=</span>/home/frenkie/security/bin/sam9x60 <span style="color:#033">LIBFFI_CFLAGS</span><span style="color:#555">=</span>-I/opt/arm-buildroot-linux-gnueabi_sdk-buildroot/arm-buildroot-linux-gnueabi/sysroot/usr/include <span style="color:#033">LIBFFI_LIBS</span><span style="color:#555">=</span><span style="color:#c30">&#34;-L/opt/arm-buildroot-linux-gnueabi_sdk-buildroot/arm-buildroot-linux-gnueabi/sysroot/usr/lib -lffi&#34;</span>
+make
+make install
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="怎样编译安装libffi">怎样编译安装libffi</h2>
+<p>libffi是一个开源项目，用于高级语言之间的相互调用的处理。</p>
+<p>参考：http://www.linuxidc.com/Linux/2011-09/43818.htm</p>
+<p>下载：http://sourceware.org/libffi/</p>
+<p>配置和编译</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">git clone git://github.com/atgreen/libffi.git <span style="color:#555">&amp;&amp;</span> <span style="color:#366">cd</span> libffi
+autoreconf -i <span style="color:#555">&amp;&amp;</span> automake <span style="color:#555">&amp;&amp;</span> autoconf
+./configure <span style="color:#555">&amp;&amp;</span> make <span style="color:#555">&amp;&amp;</span> make install
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="libtasn1">libtasn1</h2>
+<h3 id="introduction-to-libtasn1">Introduction to libtasn1</h3>
+<p>libtasn1 is a highly portable C library that encodes and decodes DER/BER data following an ASN.1 schema.</p>
+<p>Download (HTTP): <a href="https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz">https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz</a></p>
+<p>Download (FTP): <a href="ftp://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz">ftp://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz</a></p>
+<p>Download MD5 sum: 531208de3729d42e2af0a32890f08736</p>
+<p>Download size: 1.7 MB</p>
+<p>Estimated disk space required: 11 MB (with tests)</p>
+<p>Estimated build time: 0.2 SBU (with tests)</p>
+<p>libtasn1 Dependencies</p>
+<p>Optional</p>
+<p>GTK-Doc-1.32 and Valgrind-3.16.0</p>
+<p>User Notes: <a href="http://wiki.linuxfromscratch.org/blfs/wiki/libtasn1">http://wiki.linuxfromscratch.org/blfs/wiki/libtasn1</a></p>
+<h3 id="installation-of-libtasn1">Installation of libtasn1</h3>
+<p>Install libtasn1 by running the following commands:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">./configure --prefix<span style="color:#555">=</span>/usr --disable-static <span style="color:#555">&amp;&amp;</span>
+make
+</code></pre></td></tr></table>
+</div>
+</div><p>To test the results, issue: make check.
+Now, as the root user:</p>
+<h3 id="make-install">make install</h3>
+<p>If you did not pass the &ndash;enable-gtk-doc parameter to the configure script, you can install the API documentation using the following command as the root user:</p>
+<p>make -C doc/reference install-data-local</p>
+<h4 id="command-explanations">Command Explanations</h4>
+<p>&ndash;disable-static: This switch prevents installation of static versions of the libraries.</p>
+<p>&ndash;enable-gtk-doc: This parameter is normally used if GTK-Doc is installed and you wish to rebuild and install the API documentation. It is broken for this package due to the use of a long deprecated gtk-doc program that is no longer available.</p>
+<h4 id="contents">Contents</h4>
+<ul>
+<li>Installed Programs: asn1Coding, asn1Decoding and asn1Parser</li>
+<li>Installed Library: libtasn1.so</li>
+<li>Installed Directory: /usr/share/gtk-doc/html/libtasn1</li>
+</ul>
+<h4 id="short-descriptions">Short Descriptions</h4>
+<ul>
+<li>asn1Coding is an ASN.1 DER encoder.</li>
+<li>asn1Decoding is an ASN.1 DER decoder.</li>
+<li>asn1Parser is an ASN.1 syntax tree generator for libtasn1.</li>
+<li>libtasn1.so is a library for Abstract Syntax Notation One (ASN.1) and Distinguish Encoding Rules (DER) manipulation.</li>
+</ul>
+<h2 id="编译gnutls">编译gnutls</h2>
+<p>如果没有定义BR2_PACKAGE_LIBUNISTRING的话需要增加&ndash;with-included-unistring配置选项</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">./configure --host<span style="color:#555">=</span>arm-buildroot-linux-gnueabi --prefix<span style="color:#555">=</span>/home/frenkie/security/bin/sam9x60 --disable-static --with-included-unistring --enable-tools --with-p11-kit --disable-crywrap --disable-doc --disable-guile --disable-libdane --disable-rpath --enable-local-libopts --enable-openssl-compatibility --with-default-trust-store-file<span style="color:#555">=</span>/etc/ssl/certs/ca-certificates.crt
+make
+make install
+</code></pre></td></tr></table>
+</div>
+</div>
+                    
+                    <HR width="100%" id="EOF">
+		    <p style="color:#777;">最后修改于 2021-05-17</p>
+                    
+                </div>
+            </div>
+            
+            
+            <nav class="post-pagination">
+
+                
+                <a class="newer-posts" href="https://flyerink.github.io/post/%E5%9C%A8linux%E4%B8%8B%E7%BC%96%E8%AF%91cryptoauthlib%E5%92%8Cpkcs11/">
+			下一篇<br>将Cryptoauthlib设置为Linux系统的PKCS11提供程序
+                </a>
+                
+                
+                
+                <a class="older-posts" href="https://flyerink.github.io/post/first/">
+			上一篇<br>新的开篇
+                </a>
+                
+            </nav>
+            <div class="post-comment-wrapper">
+                
+
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div><div id="single-column-footer">
+Hugo Theme <a href="https://github.com/amazingrise/hugo-theme-diary">Diary</a> By <a href="https://amazingrise.net">Rise</a>
+<br>
+移植自 <a href="https://mak1t0.cc/" target="_blank" rel="noreferrer noopener">Makito</a>'s <a href="https://github.com/SumiMakito/hexo-theme-journal/" target="_blank" rel="noreferrer noopener">Journal.</a> <br>
+<br>
+
+&copy;
+	
+	Copyright (c) 2021, Flyerink Wang
+	
+</div>
+            </div>
+    <script>
+let app;
+
+app = new Vue({
+    el: '#app',
+    data: {
+        scrollY: 0,
+        navOpacity: 0,
+        isDrawerOpen: false,
+        mounted: false,
+        isDarkMode: false
+    },
+    methods: {
+            sgn(t, x) {
+                let k = 1. / (1. - 2 * t);
+                if (x <= t) return 0;
+                else if (x >= 1 - t) return 1;
+                else {
+                    return k * (x - t);
+                }
+            },
+            handleScroll() {
+                this.scrollY = window.scrollY;
+                this.navOpacity = this.sgn(.0, Math.min(1, Math.max(0, window.scrollY / (this.pageHeadHeight() - this.navBarHeight() * 0.8))));
+                const {navBar, navBackground, navTitle, extraContainer, streamContainer} = this.$refs;
+
+                if (this.navOpacity >= 1) {
+                    navBackground.style.opacity = 1;
+                    navTitle.style.opacity = 1;
+                } else {
+                    navBackground.style.opacity = 0;
+                    navTitle.style.opacity = 0;
+                }
+            },
+            handleResize() {
+                const {navBar, navBackground, navTitle, extraContainer, streamContainer} = this.$refs;
+                extraContainer.style.left = (streamContainer.offsetWidth - extraContainer.offsetWidth) + 'px';
+            },
+            navBarHeight() {
+                return this.$refs.navBar.offsetHeight;
+            },
+            pageHeadHeight() {
+                return this.$refs.pageHead.offsetHeight;
+            },
+            toggleDrawer() {
+                this.isDrawerOpen = !this.isDrawerOpen;
+                document.getElementsByTagName('html')[0].style.overflow = this.isDrawerOpen ? 'hidden' : 'unset';
+            },
+            closeDrawer() {
+                this.isDrawerOpen = false;
+                document.getElementsByTagName('html')[0].style.overflow = this.isDrawerOpen ? 'hidden' : 'unset';
+            },
+            toggleDarkMode() {
+                this.isDarkMode = !this.isDarkMode;
+                if (this.isDarkMode==true){
+                    document.cookie = "night=1;path=/";
+                    document.body.classList.add("night");
+                } else {
+                    document.cookie = "night=0;path=/";
+                    document.body.classList.remove("night");
+                }
+            },
+            debounce(func, wait, options) {
+                let lastArgs,
+                    lastThis,
+                    maxWait,
+                    result,
+                    timerId,
+                    lastCallTime
+
+                let lastInvokeTime = 0
+                let leading = false
+                let maxing = false
+                let trailing = true
+
+                
+                const useRAF = (!wait && wait !== 0 && typeof root.requestAnimationFrame === 'function')
+
+                if (typeof func !== 'function') {
+                    throw new TypeError('Expected a function')
+                }
+                function isObject(value) {
+                    const type = typeof value
+                    return value != null && (type === 'object' || type === 'function')
+                }
+
+                wait = +wait || 0
+                if (isObject(options)) {
+                    leading = !!options.leading
+                    maxing = 'maxWait' in options
+                    maxWait = maxing ? Math.max(+options.maxWait || 0, wait) : maxWait
+                    trailing = 'trailing' in options ? !!options.trailing : trailing
+                }
+
+                function invokeFunc(time) {
+                    const args = lastArgs
+                    const thisArg = lastThis
+
+                    lastArgs = lastThis = undefined
+                    lastInvokeTime = time
+                    result = func.apply(thisArg, args)
+                    return result
+                }
+
+                function startTimer(pendingFunc, wait) {
+                    if (useRAF) {
+                    root.cancelAnimationFrame(timerId)
+                    return root.requestAnimationFrame(pendingFunc)
+                    }
+                    return setTimeout(pendingFunc, wait)
+                }
+
+                function cancelTimer(id) {
+                    if (useRAF) {
+                    return root.cancelAnimationFrame(id)
+                    }
+                    clearTimeout(id)
+                }
+
+                function leadingEdge(time) {
+                    
+                    lastInvokeTime = time
+                    
+                    timerId = startTimer(timerExpired, wait)
+                    
+                    return leading ? invokeFunc(time) : result
+                }
+
+                function remainingWait(time) {
+                    const timeSinceLastCall = time - lastCallTime
+                    const timeSinceLastInvoke = time - lastInvokeTime
+                    const timeWaiting = wait - timeSinceLastCall
+
+                    return maxing
+                    ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke)
+                    : timeWaiting
+                }
+
+                function shouldInvoke(time) {
+                    const timeSinceLastCall = time - lastCallTime
+                    const timeSinceLastInvoke = time - lastInvokeTime
+
+                    
+                    
+                    
+                    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+                    (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait))
+                }
+
+                function timerExpired() {
+                    const time = Date.now()
+                    if (shouldInvoke(time)) {
+                    return trailingEdge(time)
+                    }
+                    
+                    timerId = startTimer(timerExpired, remainingWait(time))
+                }
+
+                function trailingEdge(time) {
+                    timerId = undefined
+
+                    
+                    
+                    if (trailing && lastArgs) {
+                    return invokeFunc(time)
+                    }
+                    lastArgs = lastThis = undefined
+                    return result
+                }
+
+                function cancel() {
+                    if (timerId !== undefined) {
+                    cancelTimer(timerId)
+                    }
+                    lastInvokeTime = 0
+                    lastArgs = lastCallTime = lastThis = timerId = undefined
+                }
+
+                function flush() {
+                    return timerId === undefined ? result : trailingEdge(Date.now())
+                }
+
+                function pending() {
+                    return timerId !== undefined
+                }
+
+                function debounced(...args) {
+                    const time = Date.now()
+                    const isInvoking = shouldInvoke(time)
+
+                    lastArgs = args
+                    lastThis = this
+                    lastCallTime = time
+
+                    if (isInvoking) {
+                    if (timerId === undefined) {
+                        return leadingEdge(lastCallTime)
+                    }
+                    if (maxing) {
+                        
+                        timerId = startTimer(timerExpired, wait)
+                        return invokeFunc(lastCallTime)
+                    }
+                    }
+                    if (timerId === undefined) {
+                    timerId = startTimer(timerExpired, wait)
+                    }
+                    return result
+                }
+                debounced.cancel = cancel
+                debounced.flush = flush
+                debounced.pending = pending
+                return debounced
+                }
+
+    },
+    created() {
+        window.addEventListener('scroll', this.handleScroll);
+        window.addEventListener('resize', this.handleResize);
+        window._nonDesktop = function () {
+            let check = false;
+            (function (a) {
+                if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true;
+            })(navigator.userAgent || navigator.vendor || window.opera);
+            return check;
+        };
+        
+        var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if (night==""){
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                
+            }
+        }else{
+            
+            if (night=="1") {
+                this.toggleDarkMode();
+            }
+        }
+    },
+    mounted() {
+        this.handleScroll();
+        this.handleResize();
+        this.mounted = true;
+
+        
+        
+        
+
+        document.querySelectorAll("table").forEach(function(elem){
+            elem.classList.add("table-striped");
+            elem.classList.add("table");
+            elem.classList.add("table-responsive");
+            elem.classList.add("table-hover");
+        })
+
+        
+        spy();
+        window.addEventListener('scroll', this.debounce(spy, 250, { 'maxWait': 250 }), false);
+        
+        
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.handleScroll);
+        window.removeEventListener('resize', this.handleResize);
+    }
+});
+
+
+
+</script>
+    </body>
+</html>
